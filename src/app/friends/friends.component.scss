@@ -1,0 +1,15 @@
+#friends-wrapper {
+  margin-top: 1rem;
+  // background-color: indigo;
+  min-height: calc(90vh + 6px); //TODO:
+}
+
+#friends {
+  padding-top: 1rem;
+}
+
+#addRemove {
+  position: fixed;
+  bottom: 5vh;
+  right: 5vw;
+}

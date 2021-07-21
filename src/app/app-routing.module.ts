@@ -1,14 +1,16 @@
+import { VisualizerComponent } from './visualizer/visualizer.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { FriendsComponent } from './friends/friends.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/friends', pathMatch: 'full' },
-  { path: 'friends', component: FriendsComponent }
+  { path: '', redirectTo: '/add', pathMatch: 'full' },
+  { path: 'add', component: FriendsComponent },
+  { path: 'visualizer', component: VisualizerComponent },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

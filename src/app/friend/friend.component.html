@@ -1,1 +1,47 @@
-<p>friend works!</p>
+<mat-card id="friend">
+  <mat-card-title>New Friend</mat-card-title>
+  <mat-card-content>
+    <form [formGroup]="friendForm" (ngSubmit)="onSubmit()" fxLayout="column">
+      <mat-form-field appearance="fill">
+        <mat-label>Name</mat-label>
+        <input type="text" matInput placeholder="John Smith" required formControlName="name">
+        <mat-error *ngIf="friendForm.get('name')?.hasError('required')">
+          Name is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Friends</mat-label>
+        <mat-select formControlName="friends" multiple>
+          <mat-option *ngFor="let friend of friendsList" [value]="friend">{{friend}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Age</mat-label>
+        <input type="number" matInput required formControlName="age">
+        <mat-error *ngIf="friendForm.get('age')?.hasError('min') || friendForm.get('age')?.hasError('max')">
+          Age must be between 1 and 120
+        </mat-error>
+        <mat-error *ngIf="friendForm.get('age')?.hasError('required')">
+          Age is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Weight</mat-label>
+        <input type="number" matInput required formControlName="weight">
+        <mat-error *ngIf="friendForm.get('weight')?.hasError('min') || friendForm.get('weight')?.hasError('max')">
+          Weight must be between 6 and 1000
+        </mat-error>
+        <mat-error *ngIf="friendForm.get('weight')?.hasError('required')">
+          Weight is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+    </form>
+  </mat-card-content>
+  <mat-card-actions fxLayoutAlign="space-between">
+    <button type="button" mat-button (click)="remove()">REMOVE</button>
+    <button type="button" mat-raised-button color="primary" (click)="commit()">COMMIT</button>
+  </mat-card-actions>
+</mat-card>
