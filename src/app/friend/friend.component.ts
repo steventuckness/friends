@@ -1,5 +1,10 @@
+import { friendAdded } from './../store/friends.actions';
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+// import { State } from '../reducers';
+import { Friend } from '../models/friend';
+import { Store } from '@ngrx/store';
+import { FriendState } from '../store/friends.reducer';
 
 @Component({
   selector: 'app-friend',
@@ -34,7 +39,7 @@ export class FriendComponent implements OnInit {
     'Bill',
   ];
 
-  constructor() {}
+  constructor(private store: Store<FriendState>) {}
 
   ngOnInit(): void {}
 
@@ -42,6 +47,11 @@ export class FriendComponent implements OnInit {
 
   commit(): void {
     console.log('TODO: commit');
+    console.log(this.friendForm.value);
+    // TODO: dispatch to the parent and have dispatch to store
+    this.store.dispatch(
+      friendAdded({ friend: { ...this.friendForm.value, friends: {} } })
+    );
   }
 
   remove(): void {

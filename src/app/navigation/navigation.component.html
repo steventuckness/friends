@@ -1,5 +1,4 @@
-<!-- TODO: mat-nav-list would probably bet better here -->
-<div id="navigation">
-  <a mat-stroked-button [routerLink]="['/add']" routerLinkActive="mat-accent">Add New Friends</a>
-  <a mat-stroked-button [routerLink]="['/visualizer']" routerLinkActive="mat-accent">Friend Visualizer</a>
-</div>
+<mat-toolbar color="primary">
+  <a mat-button [routerLink]="['/add']" routerLinkActive="mat-accent">Add New Friends</a><!-- this doesn't look right. Should be like an overlay-->
+  <a mat-button [routerLink]="['/visualizer']" routerLinkActive="mat-accent">Friend Visualizer</a>
+</mat-toolbar>

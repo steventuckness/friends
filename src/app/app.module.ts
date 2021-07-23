@@ -1,3 +1,4 @@
+import { FriendsEffects } from './store/friends.effects';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -17,11 +18,12 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { NavigationComponent } from './navigation/navigation.component';
 import { VisualizerComponent } from './visualizer/visualizer.component';
 import { StoreModule } from '@ngrx/store';
-import { reducers, metaReducers } from './reducers';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from '../environments/environment';
 import * as fromFriends from './store/friends.reducer';
 import { EffectsModule } from '@ngrx/effects';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { reducers, metaReducers } from './store';
 
 @NgModule({
   declarations: [
@@ -43,10 +45,14 @@ import { EffectsModule } from '@ngrx/effects';
     MatSelectModule,
     MatButtonModule,
     FlexLayoutModule,
+    MatToolbarModule,
     StoreModule.forRoot(reducers, { metaReducers }),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
-    StoreModule.forFeature(fromFriends.friendsFeatureKey, fromFriends.reducer),
-    EffectsModule.forRoot([]),
+    StoreModule.forFeature(
+      fromFriends.friendsFeatureKey,
+      fromFriends.friendReducer
+    ),
+    EffectsModule.forRoot([FriendsEffects]), // TODO: would be better if this was added to the feature
   ],
   providers: [],
   bootstrap: [AppComponent],
