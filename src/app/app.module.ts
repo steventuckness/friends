@@ -46,13 +46,9 @@ import { reducers, metaReducers } from './store';
     MatButtonModule,
     FlexLayoutModule,
     MatToolbarModule,
-    StoreModule.forRoot(reducers, { metaReducers }),
+    StoreModule.forRoot({ friends: fromFriends.friendReducer }),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
-    StoreModule.forFeature(
-      fromFriends.friendsFeatureKey,
-      fromFriends.friendReducer
-    ),
-    EffectsModule.forRoot([FriendsEffects]), // TODO: would be better if this was added to the feature
+    EffectsModule.forRoot([FriendsEffects]),
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -1,7 +1,7 @@
 import {
-  selectTotalFriendCount,
   selectAllFriends,
   selectFriendState,
+  selectTotalFriendsCount,
 } from './../store/friends.selectors';
 import { loadFriends } from './../store/friends.actions';
 import { FriendState } from './../store/friends.reducer';
@@ -9,9 +9,10 @@ import { Friend } from './../models/friend';
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { select, Store } from '@ngrx/store';
-import { BehaviorSubject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { Observable } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
+import { filter, takeUntil, tap } from 'rxjs/operators';
+import { State } from '../store';
 
 @Component({
   selector: 'app-friends',
@@ -24,24 +25,30 @@ export class FriendsComponent implements OnInit {
   });
 
   friends = new Array(1);
+  friendState$ = this.store.select(selectFriendState);
+  friends$: Observable<Friend[]> = this.store.select(selectAllFriends);
+  friendCount$: Observable<number> = this.store.select(selectTotalFriendsCount);
 
-  friendState$: Observable<FriendState> = this.store.select(selectFriendState);
-  // friendCount$: Observable<number> = this.store.select(selectTotalFriendCount);
-  // friends$: Observable<Friend[]> = this.store.select(selectAllFriends);
+  destroySub$: Subject<null> = new Subject();
 
-  destroySub$: BehaviorSubject<null> = new BehaviorSubject(null);
-
-  constructor(private readonly store: Store<FriendState>) {}
+  constructor(private readonly store: Store<State>) {}
 
   ngOnInit(): void {
     this.store.dispatch(loadFriends());
 
-    // this.friendCount$
-    //   .pipe(
-    //     // takeUntil(this.destroySub$),
-    //     tap((value) => 'friendcount: ' + console.log(value))
-    //   )
-    //   .subscribe();
+    this.friendState$
+      .pipe(tap((value) => console.log('friendState" ', value)))
+      .subscribe();
+    this.friends$
+      .pipe(tap((value) => console.log('friends: ', value)))
+      .subscribe();
+    this.friendCount$
+      .pipe(
+        takeUntil(this.destroySub$),
+        filter((a) => a !== undefined),
+        tap((value) => console.log('friendcount: ' + value))
+      )
+      .subscribe();
 
     // TODO: only do once and on a form that needs it...
   }

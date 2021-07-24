@@ -13,7 +13,7 @@ export interface State {
   friends: FriendState;
 }
 
-// export const getFriendsState = createFeatureSelector<State>('friends');
+export const getFriendsState = createFeatureSelector<State>('friends');
 
 export const reducers: ActionReducerMap<State> = {
   friends: friendReducer,
