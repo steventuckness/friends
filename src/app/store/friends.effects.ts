@@ -18,20 +18,26 @@ export class FriendsEffects {
         // TODO: call fake service or in memory api until real service is added
         let friends = [
           {
-            name: 'Joe',
+            name: 'Joe Super',
             weight: 150,
             age: 31,
             id: 0,
             friendIds: [1],
           } as Friend,
           {
-            name: 'Catherine',
+            name: 'Catherine Dunkel',
             weight: 122,
             age: 30,
             id: 1,
             friendIds: [0],
           } as Friend,
-          { name: 'Jack', weight: 175, age: 38, id: 2 } as Friend,
+          {
+            name: 'Jack D',
+            weight: 175,
+            age: 38,
+            id: 2,
+            friendIds: [],
+          } as Friend,
         ];
 
         return of(friends).pipe(

@@ -24,6 +24,8 @@ import * as fromFriends from './store/friends.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
+import { BarComponent } from './bar/bar.component';
+import { GraphComponent } from './graph/graph.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +34,8 @@ import { MatIconModule } from '@angular/material/icon';
     FriendComponent,
     NavigationComponent,
     VisualizerComponent,
+    BarComponent,
+    GraphComponent,
   ],
   imports: [
     BrowserModule,
