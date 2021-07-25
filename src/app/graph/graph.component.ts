@@ -1,6 +1,13 @@
+import { identifierModuleUrl } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
+import { select, Store } from '@ngrx/store';
 import * as d3 from 'd3';
 import { ForceLink, SimulationLinkDatum, SimulationNodeDatum } from 'd3';
+import { Observable, Subject } from 'rxjs';
+import { map, takeUntil, tap } from 'rxjs/operators';
+import { Friend } from '../models/friend';
+import { State } from '../store';
+import { selectAllFriends } from '../store/friends.selectors';
 
 @Component({
   selector: 'app-graph',
@@ -8,47 +15,52 @@ import { ForceLink, SimulationLinkDatum, SimulationNodeDatum } from 'd3';
   styleUrls: ['./graph.component.scss'],
 })
 export class GraphComponent implements OnInit {
-  constructor() {}
+  constructor(private readonly store: Store<State>) {}
 
   private svg: any;
   private margin = 50;
   private width = 750 - this.margin * 2;
   private height = 400 - this.margin * 2;
 
-  private nodes = [
-    { id: 'mammal', group: 0, label: 'Mammals', level: 1 },
-    { id: 'dog', group: 0, label: 'Dogs', level: 1 },
-    { id: 'cat', group: 0, label: 'Cats', level: 1 },
-    { id: 'fox', group: 0, label: 'Foxes', level: 1 },
-    { id: 'elk', group: 0, label: 'Elk', level: 1 },
-    { id: 'insect', group: 1, label: 'Insects', level: 1 },
-    { id: 'ant', group: 1, label: 'Ants', level: 1 },
-    { id: 'bee', group: 1, label: 'Bees', level: 1 },
-    { id: 'fish', group: 2, label: 'Fish', level: 1 },
-    { id: 'carp', group: 2, label: 'Carp', level: 1 },
-    { id: 'pike', group: 2, label: 'Pikes', level: 1 },
-  ];
-
-  private links = [
-    { target: 'mammal', source: 'dog', strength: 0.1 },
-    { target: 'mammal', source: 'cat', strength: 0.1 },
-    { target: 'mammal', source: 'fox', strength: 0.1 },
-    { target: 'mammal', source: 'elk', strength: 0.1 },
-    { target: 'insect', source: 'ant', strength: 0.1 },
-    { target: 'insect', source: 'bee', strength: 0.1 },
-    { target: 'fish', source: 'carp', strength: 0.1 },
-    { target: 'fish', source: 'pike', strength: 0.1 },
-    { target: 'cat', source: 'elk', strength: 0.1 },
-    { target: 'carp', source: 'ant', strength: 0.1 },
-    { target: 'elk', source: 'bee', strength: 0.1 },
-    { target: 'dog', source: 'cat', strength: 0.1 },
-    { target: 'fox', source: 'ant', strength: 0.1 },
-    { target: 'pike', source: 'dog', strength: 0.1 },
-  ];
+  friends$: Observable<Friend[]> = this.store.pipe(select(selectAllFriends));
+  destroySub$: Subject<null> = new Subject();
 
   ngOnInit(): void {
     this.createSvg();
-    this.drawGraph();
+
+    // TODO: refactor. selector or pure pipe
+    this.friends$
+      .pipe(
+        tap((friends) => {
+          let nodes: {
+            id: number;
+            group: number;
+            label: string;
+            level: number;
+          }[] = friends.map((friend) => ({
+            id: friend.id,
+            group: 0,
+            label: friend.name,
+            level: 0,
+          }));
+
+          let links: { target: number; source: number; strength: number }[] =
+            [];
+          friends.forEach((friend) => {
+            friend.friendIds.forEach((friendId) => {
+              links.push({
+                target: friendId,
+                source: friend.id,
+                strength: 0.1,
+              });
+            });
+          });
+
+          this.drawGraph(nodes, links);
+        }),
+        takeUntil(this.destroySub$)
+      )
+      .subscribe();
   }
 
   private createSvg(): void {
@@ -61,7 +73,7 @@ export class GraphComponent implements OnInit {
       .attr('transform', 'translate(' + this.margin + ',' + this.margin + ')');
   }
 
-  private drawGraph(): void {
+  private drawGraph(nodes: any, links: any): void {
     const simulation = d3
       .forceSimulation()
       .force('charge', d3.forceManyBody().strength(-125))
@@ -70,7 +82,7 @@ export class GraphComponent implements OnInit {
     const linkElements = this.svg
       .append('g')
       .selectAll('line')
-      .data(this.links)
+      .data(links)
       .enter()
       .append('line')
       .attr('stroke-width', 1)
@@ -79,15 +91,15 @@ export class GraphComponent implements OnInit {
     const nodeElements = this.svg
       .append('g')
       .selectAll('circle')
-      .data(this.nodes)
+      .data(nodes)
       .enter()
       .append('circle')
       .attr('r', 10)
-      .attr('fill', this.getNodeColor);
+      .attr('fill', 'red');
     const textElements = this.svg
       .append('g')
       .selectAll('text')
-      .data(this.nodes)
+      .data(nodes)
       .enter()
       .append('text')
       .text((node: any) => node.label)
@@ -95,7 +107,7 @@ export class GraphComponent implements OnInit {
       .attr('dx', 15)
       .attr('dy', 4);
 
-    simulation.nodes(this.nodes as SimulationNodeDatum[]).on('tick', () => {
+    simulation.nodes(nodes as SimulationNodeDatum[]).on('tick', () => {
       linkElements
         .attr('x1', (link: any) => link.source.x)
         .attr('y1', (link: any) => link.source.y)
@@ -117,10 +129,6 @@ export class GraphComponent implements OnInit {
         .strength((link: any) => link.strength)
     );
 
-    simulation!.force<ForceLink<any, any>>('link')!.links(this.links);
-  }
-
-  getNodeColor(node: any) {
-    return node.level === 1 ? 'red' : 'gray';
+    simulation!.force<ForceLink<any, any>>('link')!.links(links);
   }
 }
