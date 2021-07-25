@@ -23,7 +23,7 @@ import { environment } from '../environments/environment';
 import * as fromFriends from './store/friends.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { reducers, metaReducers } from './store';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -46,6 +46,7 @@ import { reducers, metaReducers } from './store';
     MatButtonModule,
     FlexLayoutModule,
     MatToolbarModule,
+    MatIconModule,
     StoreModule.forRoot({ friends: fromFriends.friendReducer }),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
     EffectsModule.forRoot([FriendsEffects]),

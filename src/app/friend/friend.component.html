@@ -13,13 +13,16 @@
       <mat-form-field appearance="fill">
         <mat-label>Friends</mat-label>
         <mat-select formControlName="friends" multiple>
-          <mat-option *ngFor="let friend of friendsList" [value]="friend">{{friend}}</mat-option>
+          <mat-option *ngFor="let friend of friends" [value]="friend">
+            {{friend.name}}, {{friend.age}} yrs., {{friend.weight}} lbs, {{friend.friendIds?.length || 0 }} friend(s) <!-- TODO: pipe would be better here..-->
+          </mat-option>
         </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
         <mat-label>Age</mat-label>
         <input type="number" matInput required formControlName="age">
+        <span matSuffix>&nbsp;Years</span>
         <mat-error *ngIf="friendForm.get('age')?.hasError('min') || friendForm.get('age')?.hasError('max')">
           Age must be between 1 and 120
         </mat-error>
@@ -31,6 +34,7 @@
       <mat-form-field appearance="fill">
         <mat-label>Weight</mat-label>
         <input type="number" matInput required formControlName="weight">
+        <span matSuffix>&nbsp;lb.</span>
         <mat-error *ngIf="friendForm.get('weight')?.hasError('min') || friendForm.get('weight')?.hasError('max')">
           Weight must be between 6 and 1000
         </mat-error>
@@ -41,7 +45,7 @@
     </form>
   </mat-card-content>
   <mat-card-actions fxLayoutAlign="space-between">
-    <button type="button" mat-button (click)="remove()">REMOVE</button>
-    <button type="button" mat-raised-button color="primary" (click)="commit()">COMMIT</button>
+    <button type="button" mat-button (click)="removeClicked()">REMOVE</button>
+    <button type="button" mat-raised-button color="primary" (click)="commitClicked()">COMMIT</button>
   </mat-card-actions>
 </mat-card>

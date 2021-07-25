@@ -1,10 +1,16 @@
-import { friendAdded } from './../store/friends.actions';
-import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-// import { State } from '../reducers';
+import { Component, Input, OnInit } from '@angular/core';
+import {
+  AbstractControl,
+  FormArray,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { Friend } from '../models/friend';
 import { Store } from '@ngrx/store';
 import { FriendState } from '../store/friends.reducer';
+import { Output } from '@angular/core';
+import { EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-friend',
@@ -12,32 +18,16 @@ import { FriendState } from '../store/friends.reducer';
   styleUrls: ['./friend.component.scss'],
 })
 export class FriendComponent implements OnInit {
-  friendForm = new FormGroup({
-    name: new FormControl('', [Validators.required]),
-    friends: new FormControl(''),
-    age: new FormControl('', [
-      Validators.required,
-      Validators.min(1),
-      Validators.max(120),
-    ]),
-    weight: new FormControl('', [
-      Validators.required,
-      Validators.min(6),
-      Validators.max(1000),
-    ]),
-  });
+  @Input() index = 0;
+  @Input() friendForm: FormGroup = new FormGroup({});
+  @Input() friends: Friend[] = [];
 
-  friendsList = [
-    'John Smith',
-    'Joe',
-    'Sarah',
-    'Jack',
-    'Jill',
-    'Renu',
-    'Amanda',
-    'Sam',
-    'Bill',
-  ];
+  @Output() remove: EventEmitter<number> = new EventEmitter();
+  @Output() commit: EventEmitter<{
+    friend: Friend;
+    index: number;
+    friends: Friend[];
+  }> = new EventEmitter();
 
   constructor(private store: Store<FriendState>) {}
 
@@ -45,16 +35,19 @@ export class FriendComponent implements OnInit {
 
   onSubmit(): void {}
 
-  commit(): void {
-    console.log('TODO: commit');
-    console.log(this.friendForm.value);
-    // TODO: dispatch to the parent and have dispatch to store
-    this.store.dispatch(
-      friendAdded({ friend: { ...this.friendForm.value, friends: {} } })
-    );
+  removeClicked(): void {
+    this.remove.emit(this.index);
   }
 
-  remove(): void {
-    console.log('TDOO: remove');
+  commitClicked(): void {
+    this.friendForm.markAllAsTouched();
+
+    if (this.friendForm.valid) {
+      this.commit.emit({
+        friend: { ...this.friendForm.value, friends: undefined },
+        index: this.index,
+        friends: this.friendForm.get('friends')?.value,
+      });
+    }
   }
 }

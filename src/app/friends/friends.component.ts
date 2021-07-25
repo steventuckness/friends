@@ -1,17 +1,24 @@
 import {
   selectAllFriends,
   selectFriendState,
+  selectIsFriendsLoaded,
   selectTotalFriendsCount,
 } from './../store/friends.selectors';
-import { loadFriends } from './../store/friends.actions';
-import { FriendState } from './../store/friends.reducer';
+import { friendAdded, loadFriends } from './../store/friends.actions';
 import { Friend } from './../models/friend';
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, FormControl } from '@angular/forms';
+import {
+  FormArray,
+  FormGroup,
+  FormControl,
+  AbstractControl,
+  Validators,
+  FormBuilder,
+} from '@angular/forms';
 import { select, Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { Observable } from 'rxjs';
-import { filter, takeUntil, tap } from 'rxjs/operators';
+import { filter, take, takeUntil, tap } from 'rxjs/operators';
 import { State } from '../store';
 
 @Component({
@@ -20,55 +27,103 @@ import { State } from '../store';
   styleUrls: ['./friends.component.scss'],
 })
 export class FriendsComponent implements OnInit {
-  friendsForm = new FormGroup({
-    friends: new FormArray([]),
-  });
-
-  friends = new Array(1);
+  friendsForm: FormGroup;
+  friendsIsLoaded$ = this.store.pipe(select(selectIsFriendsLoaded));
   friendState$ = this.store.select(selectFriendState);
-  friends$: Observable<Friend[]> = this.store.select(selectAllFriends);
-  friendCount$: Observable<number> = this.store.select(selectTotalFriendsCount);
-
+  friends$: Observable<Friend[]> = this.store.pipe(select(selectAllFriends));
+  friendCount$: Observable<number> = this.store.pipe(
+    select(selectTotalFriendsCount)
+  );
   destroySub$: Subject<null> = new Subject();
 
-  constructor(private readonly store: Store<State>) {}
+  constructor(private readonly store: Store<State>, private fb: FormBuilder) {
+    this.friendsForm = this.fb.group({
+      friends: this.fb.array([this.buildNewFriendForm()]),
+    });
+  }
 
   ngOnInit(): void {
-    this.store.dispatch(loadFriends());
-
-    this.friendState$
-      .pipe(tap((value) => console.log('friendState" ', value)))
-      .subscribe();
-    this.friends$
-      .pipe(tap((value) => console.log('friends: ', value)))
-      .subscribe();
-    this.friendCount$
+    this.friendsIsLoaded$
       .pipe(
-        takeUntil(this.destroySub$),
-        filter((a) => a !== undefined),
-        tap((value) => console.log('friendcount: ' + value))
+        take(1),
+        filter((value) => !value),
+        tap(() => this.store.dispatch(loadFriends()))
       )
       .subscribe();
 
-    // TODO: only do once and on a form that needs it...
+    this.friendState$
+      .pipe(
+        tap((value) => console.log('friendState" ', value)),
+        takeUntil(this.destroySub$)
+      )
+      .subscribe();
+
+    this.friendCount$
+      .pipe(
+        tap((value) => console.log('friendcount: ' + value)),
+        takeUntil(this.destroySub$)
+      )
+      .subscribe();
+  }
+
+  buildNewFriendForm(): FormGroup {
+    return new FormGroup({
+      name: new FormControl('', [Validators.required]),
+      friends: new FormControl([]),
+      age: new FormControl('', [
+        Validators.required,
+        Validators.min(1),
+        Validators.max(120),
+      ]),
+      weight: new FormControl('', [
+        Validators.required,
+        Validators.min(6),
+        Validators.max(1000),
+      ]),
+    });
   }
 
   addNewFriend(): void {
-    // (this.friendsForm.get('friends') as FormArray)?.push(
-    //   new FormControl({} as Friend)
-    // );
-    this.friends.push('');
-    console.log('push');
-
-    // TODO: hide as well...
+    this.getFriendsFormArray().push(this.buildNewFriendForm());
   }
 
   removeLastFriend(): void {
-    this.friends.pop();
+    this.getFriendsFormArray().removeAt(this.getFriendsFormArray().length - 1);
   }
 
   ngOnDestroy(): void {
     this.destroySub$.next(null);
     this.destroySub$.complete();
+  }
+
+  getFriendsFormArray(): FormArray {
+    return this.friendsForm.get('friends') as FormArray;
+  }
+
+  getFriendsFormArrayControls(): AbstractControl[] {
+    return this.getFriendsFormArray().controls;
+  }
+
+  commitFriend(event: {
+    friend: Friend;
+    index: number;
+    friends: Friend[];
+  }): void {
+    this.store.dispatch(
+      friendAdded({
+        friend: event.friend,
+        friends: event.friends,
+      })
+    );
+
+    this.getFriendsFormArray().removeAt(event.index);
+  }
+
+  removePotentialFriend(index: number): void {
+    this.getFriendsFormArray().removeAt(index);
+  }
+
+  getFormGroup(friend: AbstractControl): FormGroup {
+    return friend as FormGroup;
   }
 }

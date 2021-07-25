@@ -1,9 +1,14 @@
 import { createSelector } from '@ngrx/store';
-import { getFriendsState, State } from '.';
+import { State } from '.';
 import { Friend } from '../models/friend';
 import { FriendState } from './friends.reducer';
 
 export const selectFriendState = (state: State) => state.friends;
+
+export const selectIsFriendsLoaded = createSelector(
+  selectFriendState,
+  (state: FriendState) => state.isLoaded
+);
 
 export const selectAllFriends = createSelector(
   selectFriendState,

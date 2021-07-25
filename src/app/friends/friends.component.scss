@@ -1,6 +1,6 @@
 #friends-wrapper {
   background-color: rgba(0, 0, 0, 0.87);
-  min-height: calc(90vh + 6px);
+  min-height: calc(92vh + 21px); // TODO:
 }
 
 #friends {
@@ -9,6 +9,6 @@
 
 #addRemove {
   position: fixed;
-  bottom: 5vh;
-  right: 5vw;
+  bottom: 8vh;
+  right: 4vw;
 }

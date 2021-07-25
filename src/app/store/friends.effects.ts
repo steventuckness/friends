@@ -17,9 +17,21 @@ export class FriendsEffects {
       switchMap(() => {
         // TODO: call fake service or in memory api until real service is added
         let friends = [
-          { name: 'Joe', weight: 150, age: 31 } as Friend,
-          { name: 'Catherine', weight: 122, age: 30 } as Friend,
-          { name: 'Jack', weight: 175, age: 38 } as Friend,
+          {
+            name: 'Joe',
+            weight: 150,
+            age: 31,
+            id: 0,
+            friendIds: [1],
+          } as Friend,
+          {
+            name: 'Catherine',
+            weight: 122,
+            age: 30,
+            id: 1,
+            friendIds: [0],
+          } as Friend,
+          { name: 'Jack', weight: 175, age: 38, id: 2 } as Friend,
         ];
 
         return of(friends).pipe(

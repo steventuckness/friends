@@ -1,10 +1,17 @@
 <!-- <h1 id="title">Friends</h1> -->
 <form [formGroup]="friendsForm" id="friends-wrapper">
-  <div id="friends" *ngFor="let friend of friends; let i = index">
-    <app-friend></app-friend>
-  </div>
+    <div id="friends" formArrayName="friends" *ngFor="let friend of getFriendsFormArrayControls(); let i = index">
+      <app-friend
+      [index]="i"
+      [friendForm]="getFormGroup(friend)"
+      [friends]="(friends$ | async)!"
+      (commit)="commitFriend($event)"
+      (remove)="removePotentialFriend($event)">
+      </app-friend>
+    </div>
   <div id="addRemove">
-    <button id="add" mat-button type="button" (click)="addNewFriend()">Add Another</button>
-    <button id="remove" mat-button type="button" (click)="removeLastFriend()">Remove Last</button>
+    <button id="add" mat-fab type="button" color="primary" (click)="addNewFriend()">
+      <mat-icon>add</mat-icon>
+    </button>
   </div>
 </form>

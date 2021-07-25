@@ -1,7 +1,7 @@
 export interface Friend {
-  id: string;
+  id: number;
   name: string;
-  friends: {};
   age: number;
   weight: number;
+  friendIds: number[];
 }

@@ -14,7 +14,7 @@ export const loadFriendsFailure = createAction(
 
 export const friendAdded = createAction(
   '[Friends] Friend Added',
-  props<{ friend: Friend }>()
+  props<{ friend: Friend; friends: Friend[] }>()
 );
 
 export const friendRemoved = createAction('[Friends] Friend Removed');
