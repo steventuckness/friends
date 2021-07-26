@@ -11,7 +11,7 @@ export interface FriendState {
 }
 
 export const initialState: FriendState = {
-  currentId: 3,
+  currentId: 6,
   isLoaded: false,
   friends: [],
 };
