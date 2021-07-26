@@ -14,7 +14,7 @@
         <mat-label>Friends</mat-label>
         <mat-select formControlName="friends" multiple>
           <mat-option *ngFor="let friend of friends" [value]="friend">
-            {{friend.name}}, {{friend.age}} yrs., {{friend.weight}} lbs, {{friend.friendIds?.length || 0 }} friend(s) <!-- TODO: pipe would be better here..-->
+            {{ friend | friendInfo }}
           </mat-option>
         </mat-select>
       </mat-form-field>

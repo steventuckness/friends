@@ -28,6 +28,7 @@ import { BarComponent } from './bar/bar.component';
 import { GraphComponent } from './graph/graph.component';
 import { FriendsToFriendNodesPipe } from './pipes/friends-to-friend-nodes.pipe';
 import { FriendsToFriendLinksPipe } from './pipes/friends-to-friend-links.pipe';
+import { FriendInfoPipe } from './pipes/friend-info.pipe';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { FriendsToFriendLinksPipe } from './pipes/friends-to-friend-links.pipe';
     GraphComponent,
     FriendsToFriendNodesPipe,
     FriendsToFriendLinksPipe,
+    FriendInfoPipe,
   ],
   imports: [
     BrowserModule,
