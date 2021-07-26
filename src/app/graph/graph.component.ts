@@ -3,10 +3,6 @@ import { Input } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import * as d3 from 'd3';
 import { ForceLink } from 'd3';
-import { of } from 'rxjs';
-import { Subject } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
-import { Friend } from '../models/friend';
 import { FriendLink } from '../models/friend-link';
 
 @Component({
@@ -22,40 +18,12 @@ export class GraphComponent implements OnInit {
   private width = 750 - this.margin * 2;
   private height = 400 - this.margin * 2;
 
-  @Input() friends: Friend[] = [];
-
-  destroySub$: Subject<null> = new Subject();
+  @Input() nodes: FriendNode[] = [];
+  @Input() links: FriendLink<FriendNode>[] = [];
 
   ngOnInit(): void {
     this.createSvg();
-
-    // TODO: refactor. selector or pure pipe
-    of(this.friends)
-      .pipe(
-        tap((friends) => {
-          let nodes: FriendNode[] = friends.map((friend) => ({
-            id: friend.id,
-            group: 0,
-            label: friend.name,
-            level: 0,
-          }));
-
-          let links: FriendLink<FriendNode>[] = [];
-          friends.forEach((friend) => {
-            friend.friendIds.forEach((friendId) => {
-              links.push({
-                target: friendId,
-                source: friend.id,
-                strength: 0.1,
-              });
-            });
-          });
-
-          this.drawGraph(nodes, links);
-        }),
-        takeUntil(this.destroySub$)
-      )
-      .subscribe();
+    this.drawGraph(this.nodes, this.links);
   }
 
   private createSvg(): void {
@@ -132,5 +100,8 @@ export class GraphComponent implements OnInit {
     simulation!
       .force<ForceLink<FriendNode, FriendLink<FriendNode>>>('link')!
       .links(links);
+
+    // TODO: add drag and drop functionality
+    // TODO: make responsive
   }
 }

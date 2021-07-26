@@ -26,6 +26,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { BarComponent } from './bar/bar.component';
 import { GraphComponent } from './graph/graph.component';
+import { FriendsToFriendNodesPipe } from './pipes/friends-to-friend-nodes.pipe';
+import { FriendsToFriendLinksPipe } from './pipes/friends-to-friend-links.pipe';
 
 @NgModule({
   declarations: [
@@ -36,6 +38,8 @@ import { GraphComponent } from './graph/graph.component';
     VisualizerComponent,
     BarComponent,
     GraphComponent,
+    FriendsToFriendNodesPipe,
+    FriendsToFriendLinksPipe,
   ],
   imports: [
     BrowserModule,
