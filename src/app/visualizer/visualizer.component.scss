@@ -1,3 +1,15 @@
+@import "./../../styles.scss";
+
 #visualizer {
   text-align: center;
+  padding-top: 1rem;
+  background-color: $background-color;
+  min-height: calc(92vh + 5px);
+}
+
+:host ::ng-deep .mat-card {
+  max-width: 800px;
+  margin-bottom: 1rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
 }

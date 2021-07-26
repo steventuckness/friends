@@ -1,5 +1,4 @@
-<div id="visualizer">
-  visualizer works!
-  <app-graph></app-graph>
-  <app-bar></app-bar>
+<div id="visualizer" *ngIf="friends$ | async; let friends">
+  <app-graph [friends]="friends"></app-graph>
+  <app-bar [friends]="friends"></app-bar>
 </div>

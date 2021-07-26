@@ -1,11 +1,6 @@
-import { takeUntil, tap } from 'rxjs/operators';
-import { selectAllFriends } from './../store/friends.selectors';
-import { Component, OnInit } from '@angular/core';
-import { Store, select } from '@ngrx/store';
+import { Component, Input, OnInit } from '@angular/core';
 import * as d3 from 'd3';
-import { State } from '../store';
 import { Friend } from '../models/friend';
-import { Observable, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-bar',
@@ -13,27 +8,18 @@ import { Observable, Subject } from 'rxjs';
   styleUrls: ['./bar.component.scss'],
 })
 export class BarComponent implements OnInit {
-  constructor(private readonly store: Store<State>) {}
+  constructor() {}
 
   private svg: any;
   private margin = 50;
   private width = 750 - this.margin * 2;
   private height = 400 - this.margin * 2;
 
-  friends$: Observable<Friend[]> = this.store.pipe(select(selectAllFriends));
-  destroySub$: Subject<null> = new Subject();
+  @Input() friends: Friend[] = [];
 
   ngOnInit(): void {
     this.createSvg();
-
-    this.friends$
-      .pipe(
-        tap((friends) => {
-          this.drawBars(friends);
-        }),
-        takeUntil(this.destroySub$)
-      )
-      .subscribe();
+    this.drawBars(this.friends);
   }
 
   private createSvg(): void {
@@ -79,6 +65,6 @@ export class BarComponent implements OnInit {
       .attr('y', (d: Friend) => y(d.friendIds.length))
       .attr('width', x.bandwidth())
       .attr('height', (d: Friend) => this.height - y(d.friendIds.length))
-      .attr('fill', '#d04a35');
+      .attr('fill', '#7b1fa2');
   }
 }

@@ -1,13 +1,13 @@
-import { identifierModuleUrl } from '@angular/compiler';
+import { FriendNode } from './../models/friend-node';
+import { Input } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
-import { select, Store } from '@ngrx/store';
 import * as d3 from 'd3';
-import { ForceLink, SimulationLinkDatum, SimulationNodeDatum } from 'd3';
-import { Observable, Subject } from 'rxjs';
-import { map, takeUntil, tap } from 'rxjs/operators';
+import { ForceLink } from 'd3';
+import { of } from 'rxjs';
+import { Subject } from 'rxjs';
+import { takeUntil, tap } from 'rxjs/operators';
 import { Friend } from '../models/friend';
-import { State } from '../store';
-import { selectAllFriends } from '../store/friends.selectors';
+import { FriendLink } from '../models/friend-link';
 
 @Component({
   selector: 'app-graph',
@@ -15,37 +15,32 @@ import { selectAllFriends } from '../store/friends.selectors';
   styleUrls: ['./graph.component.scss'],
 })
 export class GraphComponent implements OnInit {
-  constructor(private readonly store: Store<State>) {}
+  constructor() {}
 
   private svg: any;
   private margin = 50;
   private width = 750 - this.margin * 2;
   private height = 400 - this.margin * 2;
 
-  friends$: Observable<Friend[]> = this.store.pipe(select(selectAllFriends));
+  @Input() friends: Friend[] = [];
+
   destroySub$: Subject<null> = new Subject();
 
   ngOnInit(): void {
     this.createSvg();
 
     // TODO: refactor. selector or pure pipe
-    this.friends$
+    of(this.friends)
       .pipe(
         tap((friends) => {
-          let nodes: {
-            id: number;
-            group: number;
-            label: string;
-            level: number;
-          }[] = friends.map((friend) => ({
+          let nodes: FriendNode[] = friends.map((friend) => ({
             id: friend.id,
             group: 0,
             label: friend.name,
             level: 0,
           }));
 
-          let links: { target: number; source: number; strength: number }[] =
-            [];
+          let links: FriendLink<FriendNode>[] = [];
           friends.forEach((friend) => {
             friend.friendIds.forEach((friendId) => {
               links.push({
@@ -73,10 +68,13 @@ export class GraphComponent implements OnInit {
       .attr('transform', 'translate(' + this.margin + ',' + this.margin + ')');
   }
 
-  private drawGraph(nodes: any, links: any): void {
+  private drawGraph(
+    nodes: FriendNode[],
+    links: FriendLink<FriendNode>[]
+  ): void {
     const simulation = d3
       .forceSimulation()
-      .force('charge', d3.forceManyBody().strength(-125))
+      .force('charge', d3.forceManyBody().strength(-30))
       .force('center', d3.forceCenter(this.width / 2, this.height / 2));
 
     const linkElements = this.svg
@@ -95,40 +93,44 @@ export class GraphComponent implements OnInit {
       .enter()
       .append('circle')
       .attr('r', 10)
-      .attr('fill', 'red');
+      .attr('fill', '#7b1fa2');
+
     const textElements = this.svg
       .append('g')
       .selectAll('text')
       .data(nodes)
       .enter()
       .append('text')
-      .text((node: any) => node.label)
+      .text((node: FriendNode) => node.label)
+      .attr('fill', '#ffffff')
       .attr('font-size', 12)
       .attr('dx', 15)
       .attr('dy', 4);
 
-    simulation.nodes(nodes as SimulationNodeDatum[]).on('tick', () => {
+    simulation.nodes(nodes as FriendNode[]).on('tick', () => {
       linkElements
-        .attr('x1', (link: any) => link.source.x)
-        .attr('y1', (link: any) => link.source.y)
-        .attr('x2', (link: any) => link.target.x)
-        .attr('y2', (link: any) => link.target.y);
+        .attr('x1', (link: FriendLink<any>) => link.source.x)
+        .attr('y1', (link: FriendLink<any>) => link.source.y)
+        .attr('x2', (link: FriendLink<any>) => link.target.x)
+        .attr('y2', (link: FriendLink<any>) => link.target.y);
       nodeElements
-        .attr('cx', (node: any) => node.x)
-        .attr('cy', (node: any) => node.y);
+        .attr('cx', (node: FriendNode) => node.x)
+        .attr('cy', (node: FriendNode) => node.y);
       textElements
-        .attr('x', (node: any) => node.x)
-        .attr('y', (node: any) => node.y);
+        .attr('x', (node: FriendNode) => node.x)
+        .attr('y', (node: FriendNode) => node.y);
     });
 
     simulation.force(
       'link',
       d3
-        .forceLink()
-        .id((link: any) => link.id)
-        .strength((link: any) => link.strength)
+        .forceLink<FriendNode, FriendLink<FriendNode>>()
+        .id((node: FriendNode) => node.id)
+        .strength((link: FriendLink<FriendNode>) => link.strength)
     );
 
-    simulation!.force<ForceLink<any, any>>('link')!.links(links);
+    simulation!
+      .force<ForceLink<FriendNode, FriendLink<FriendNode>>>('link')!
+      .links(links);
   }
 }

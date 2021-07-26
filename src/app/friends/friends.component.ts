@@ -6,7 +6,7 @@ import {
 } from './../store/friends.selectors';
 import { friendAdded, loadFriends } from './../store/friends.actions';
 import { Friend } from './../models/friend';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   FormArray,
   FormGroup,
@@ -26,7 +26,7 @@ import { State } from '../store';
   templateUrl: './friends.component.html',
   styleUrls: ['./friends.component.scss'],
 })
-export class FriendsComponent implements OnInit {
+export class FriendsComponent implements OnInit, OnDestroy {
   friendsForm: FormGroup;
   friendsIsLoaded$ = this.store.pipe(select(selectIsFriendsLoaded));
   friendState$ = this.store.select(selectFriendState);
@@ -51,19 +51,9 @@ export class FriendsComponent implements OnInit {
       )
       .subscribe();
 
-    this.friendState$
-      .pipe(
-        tap((value) => console.log('friendState" ', value)),
-        takeUntil(this.destroySub$)
-      )
-      .subscribe();
+    this.friendState$.pipe(takeUntil(this.destroySub$)).subscribe();
 
-    this.friendCount$
-      .pipe(
-        tap((value) => console.log('friendcount: ' + value)),
-        takeUntil(this.destroySub$)
-      )
-      .subscribe();
+    this.friendCount$.pipe(takeUntil(this.destroySub$)).subscribe();
   }
 
   buildNewFriendForm(): FormGroup {
@@ -89,11 +79,6 @@ export class FriendsComponent implements OnInit {
 
   removeLastFriend(): void {
     this.getFriendsFormArray().removeAt(this.getFriendsFormArray().length - 1);
-  }
-
-  ngOnDestroy(): void {
-    this.destroySub$.next(null);
-    this.destroySub$.complete();
   }
 
   getFriendsFormArray(): FormArray {
@@ -125,5 +110,10 @@ export class FriendsComponent implements OnInit {
 
   getFormGroup(friend: AbstractControl): FormGroup {
     return friend as FormGroup;
+  }
+
+  ngOnDestroy(): void {
+    this.destroySub$.next(null);
+    this.destroySub$.complete();
   }
 }

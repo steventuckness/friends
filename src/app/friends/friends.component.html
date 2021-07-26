@@ -1,4 +1,3 @@
-<!-- <h1 id="title">Friends</h1> -->
 <form [formGroup]="friendsForm" id="friends-wrapper">
     <div id="friends" formArrayName="friends" *ngFor="let friend of getFriendsFormArrayControls(); let i = index">
       <app-friend
