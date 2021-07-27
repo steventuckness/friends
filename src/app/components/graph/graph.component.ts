@@ -100,8 +100,5 @@ export class GraphComponent implements OnInit {
     simulation!
       .force<ForceLink<FriendNode, FriendLink<FriendNode>>>('link')!
       .links(links);
-
-    // TODO: add drag and drop functionality
-    // TODO: make responsive
   }
 }
