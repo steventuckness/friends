@@ -3,13 +3,13 @@ import { select, Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { Observable } from 'rxjs';
 import { filter, take, tap } from 'rxjs/operators';
-import { Friend } from '../models/friend';
-import { State } from '../store';
-import { loadFriends } from '../store/friends.actions';
+import { Friend } from '../../models/friend';
+import { State } from '../../store';
+import { loadFriends } from '../../store/friends.actions';
 import {
   selectAllFriends,
   selectIsFriendsLoaded,
-} from '../store/friends.selectors';
+} from '../../store/friends.selectors';
 
 @Component({
   selector: 'app-visualizer',

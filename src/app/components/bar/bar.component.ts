@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import * as d3 from 'd3';
-import { Friend } from '../models/friend';
+import { Friend } from '../../models/friend';
 
 @Component({
   selector: 'app-bar',

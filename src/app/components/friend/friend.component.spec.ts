@@ -1,7 +1,7 @@
 import {
   selectAllFriends,
   selectIsFriendsLoaded,
-} from './../store/friends.selectors';
+} from '../../store/friends.selectors';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 

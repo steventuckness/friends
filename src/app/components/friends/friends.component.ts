@@ -3,9 +3,9 @@ import {
   selectFriendState,
   selectIsFriendsLoaded,
   selectTotalFriendsCount,
-} from './../store/friends.selectors';
-import { friendAdded, loadFriends } from './../store/friends.actions';
-import { Friend } from './../models/friend';
+} from '../../store/friends.selectors';
+import { friendAdded, loadFriends } from '../../store/friends.actions';
+import { Friend } from '../../models/friend';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   FormArray,
@@ -19,7 +19,7 @@ import { select, Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { Observable } from 'rxjs';
 import { filter, take, takeUntil, tap } from 'rxjs/operators';
-import { State } from '../store';
+import { State } from '../../store';
 
 @Component({
   selector: 'app-friends',

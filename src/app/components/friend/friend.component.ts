@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { Friend } from '../models/friend';
+import { Friend } from '../../models/friend';
 import { Output } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 

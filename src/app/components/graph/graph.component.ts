@@ -1,9 +1,9 @@
-import { FriendNode } from './../models/friend-node';
+import { FriendNode } from '../../models/friend-node';
 import { Input } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import * as d3 from 'd3';
 import { ForceLink } from 'd3';
-import { FriendLink } from '../models/friend-link';
+import { FriendLink } from '../../models/friend-link';
 
 @Component({
   selector: 'app-graph',
