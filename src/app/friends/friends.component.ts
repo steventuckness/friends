@@ -89,15 +89,10 @@ export class FriendsComponent implements OnInit, OnDestroy {
     return this.getFriendsFormArray().controls;
   }
 
-  commitFriend(event: {
-    friend: Friend;
-    index: number;
-    friends: Friend[];
-  }): void {
+  commitFriend(event: { friend: Friend; index: number }): void {
     this.store.dispatch(
       friendAdded({
         friend: event.friend,
-        friends: event.friends,
       })
     );
 

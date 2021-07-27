@@ -1,14 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import {
-  AbstractControl,
-  FormArray,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { Friend } from '../models/friend';
-import { Store } from '@ngrx/store';
-import { FriendState } from '../store/friends.reducer';
 import { Output } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 
@@ -26,10 +18,9 @@ export class FriendComponent implements OnInit {
   @Output() commit: EventEmitter<{
     friend: Friend;
     index: number;
-    friends: Friend[];
   }> = new EventEmitter();
 
-  constructor(private store: Store<FriendState>) {}
+  constructor() {}
 
   ngOnInit(): void {}
 
@@ -44,9 +35,14 @@ export class FriendComponent implements OnInit {
 
     if (this.friendForm.valid) {
       this.commit.emit({
-        friend: { ...this.friendForm.value, friends: undefined },
+        friend: {
+          ...this.friendForm.value,
+          friends: undefined,
+          friendIds: this.friendForm
+            .get('friends')
+            ?.value.map((friend: Friend) => friend.id),
+        },
         index: this.index,
-        friends: this.friendForm.get('friends')?.value,
       });
     }
   }
