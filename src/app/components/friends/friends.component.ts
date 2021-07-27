@@ -1,8 +1,6 @@
 import {
   selectAllFriends,
-  selectFriendState,
   selectIsFriendsLoaded,
-  selectTotalFriendsCount,
 } from '../../store/friends.selectors';
 import { friendAdded, loadFriends } from '../../store/friends.actions';
 import { Friend } from '../../models/friend';
@@ -18,7 +16,7 @@ import {
 import { select, Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { Observable } from 'rxjs';
-import { filter, take, takeUntil, tap } from 'rxjs/operators';
+import { filter, take, tap } from 'rxjs/operators';
 import { State } from '../../store';
 
 @Component({
@@ -29,11 +27,7 @@ import { State } from '../../store';
 export class FriendsComponent implements OnInit, OnDestroy {
   friendsForm: FormGroup;
   friendsIsLoaded$ = this.store.pipe(select(selectIsFriendsLoaded));
-  friendState$ = this.store.select(selectFriendState);
   friends$: Observable<Friend[]> = this.store.pipe(select(selectAllFriends));
-  friendCount$: Observable<number> = this.store.pipe(
-    select(selectTotalFriendsCount)
-  );
   destroySub$: Subject<null> = new Subject();
 
   constructor(private readonly store: Store<State>, private fb: FormBuilder) {
@@ -50,10 +44,6 @@ export class FriendsComponent implements OnInit, OnDestroy {
         tap(() => this.store.dispatch(loadFriends()))
       )
       .subscribe();
-
-    this.friendState$.pipe(takeUntil(this.destroySub$)).subscribe();
-
-    this.friendCount$.pipe(takeUntil(this.destroySub$)).subscribe();
   }
 
   buildNewFriendForm(): FormGroup {
@@ -73,20 +63,12 @@ export class FriendsComponent implements OnInit, OnDestroy {
     });
   }
 
-  addNewFriend(): void {
+  addNewPotentialFriend(): void {
     this.getFriendsFormArray().push(this.buildNewFriendForm());
   }
 
-  removeLastFriend(): void {
-    this.getFriendsFormArray().removeAt(this.getFriendsFormArray().length - 1);
-  }
-
-  getFriendsFormArray(): FormArray {
-    return this.friendsForm.get('friends') as FormArray;
-  }
-
-  getFriendsFormArrayControls(): AbstractControl[] {
-    return this.getFriendsFormArray().controls;
+  removePotentialFriend(index: number): void {
+    this.getFriendsFormArray().removeAt(index);
   }
 
   commitFriend(event: { friend: Friend; index: number }): void {
@@ -99,8 +81,12 @@ export class FriendsComponent implements OnInit, OnDestroy {
     this.getFriendsFormArray().removeAt(event.index);
   }
 
-  removePotentialFriend(index: number): void {
-    this.getFriendsFormArray().removeAt(index);
+  getFriendsFormArray(): FormArray {
+    return this.friendsForm.get('friends') as FormArray;
+  }
+
+  getFriendsFormArrayControls(): AbstractControl[] {
+    return this.getFriendsFormArray().controls;
   }
 
   getFormGroup(friend: AbstractControl): FormGroup {
